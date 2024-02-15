@@ -9,7 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
+        with:
+          persist-credentials: false
+          
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v3
         with:
