@@ -17,7 +17,10 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
-          
+
+      - name: Restore packages
+        run: dotnet restore
+
       - name: Publish .NET Core Project
         run: dotnet publish -c Release -o release
 
