@@ -19,16 +19,7 @@ jobs:
           dotnet-version: 8.0.x
           
       - name: Publish .NET Core Project
-        run: |
-          cd ConflictResolver
-          dotnet add package PublishSPAforGitHubPages.Build
-          dotnet publish -c Release -o release
-
-      - name: copy index.html to 404.html
-        run: cp bin/Release/net8.0/wwwroot/index.html release/wwwroot/404.html
-
-      - name: Add .nojekyll file
-        run: touch release/wwwroot/.nojekyll
+        run: dotnet publish -c Release -o release
 
       - name: Commit wwwroot to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@3.7.1
