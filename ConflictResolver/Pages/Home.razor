@@ -19,17 +19,17 @@
                 }
             </MudSelect>
         </MudItem>
-        <MudItem xs="12" Class="flex flex-col">
-            <MudSelect SelectedValuesChanged="@OnSelectedCoursesChanged" Class="mx-4" Margin="Margin.Dense" MultiSelection="true" T="string" Placeholder="Select Courses..." Variant="Variant.Outlined">
-                @if (_enrolled != null)
-                {
-                    foreach (var course in _enrolled)
+        @if (_enrolled != null && _enrolled.Any())
+        {
+            <MudItem xs="12" Class="flex flex-col">
+                <MudSelect SelectedValuesChanged="@OnSelectedCoursesChanged" Class="mx-4" Margin="Margin.Dense" MultiSelection="true" T="string" Placeholder="Select Courses..." Variant="Variant.Outlined">
+                    @foreach (var course in _enrolled)
                     {
                         <MudSelectItem T="string" Value="course"/>
                     }
-                }
-            </MudSelect>
-        </MudItem>
+                </MudSelect>
+            </MudItem>
+        }
         <MudItem xs="12" Class="flex flex-col">
             @if (_courses == null)
             {
@@ -102,11 +102,14 @@
                 </MudDataGrid>
             }
         </MudItem>
-        <MudItem xs="12" Class="flex flex-col">
-            <MudButton StartIcon="@Icons.Material.Filled.Refresh" Class="mx-4 mb-4" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary">
-                Resolve
-            </MudButton>
-        </MudItem>
+        @if (_courses != null && _courses.Any(course => course.Conflicts))
+        {
+            <MudItem xs="12" Class="flex flex-col">
+                <MudButton StartIcon="@Icons.Material.Filled.Refresh" Class="mx-4 mb-4" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary">
+                    Resolve
+                </MudButton>
+            </MudItem>
+        }
     </MudGrid>
 </MudPaper>
 
