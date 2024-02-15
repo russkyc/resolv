@@ -1,0 +1,149 @@
+﻿@page "/"
+
+@using ConflictResolver.Models
+@using ConflictResolver.Services.Repositories
+
+<MudPaper Class="my-10 rounded-lg">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudText Typo="Typo.h6" Class="my-auto mx-4">Conflict Finder</MudText>
+        </MudItem>
+        <MudItem xs="12" Class="flex flex-col">
+            <MudSelect bind-SelectedValues="@_selectedBlocks" Class="mx-4" Margin="Margin.Dense" SelectedValuesChanged="@OnBlocksChanged" MultiSelection="true" T="string" Placeholder="Select Blocks..." Variant="Variant.Outlined">
+                @if (_blocks != null)
+                {
+                    foreach (var block in _blocks)
+                    {
+                        <MudSelectItem T="string" Value="block"/>
+                    }
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" Class="flex flex-col">
+            <MudSelect SelectedValuesChanged="@OnSelectedCoursesChanged" Class="mx-4" Margin="Margin.Dense" MultiSelection="true" T="string" Placeholder="Select Courses..." Variant="Variant.Outlined">
+                @if (_enrolled != null)
+                {
+                    foreach (var course in _enrolled)
+                    {
+                        <MudSelectItem T="string" Value="course"/>
+                    }
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" Class="flex flex-col">
+            @if (_courses == null)
+            {
+                <MudText Class="mx-auto">No available schedule</MudText>
+            }
+            else
+            {
+                <MudDataGrid Hover="true" Items="@_courses" Elevation="0">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Block"/>
+                        <PropertyColumn Property="x => x.Course"/>
+                        <PropertyColumn Property="x => x.CourseTitle" Title="Course Title"/>
+                        <PropertyColumn Property="x => x.ClassType" Title="Type">
+                            <CellTemplate>
+                                <MudChip Variant="Variant.Filled" Color="@(context.Item.ClassType.Equals("LEC") ? Color.Default : Color.Primary)">
+                                    @context.Item.ClassType
+                                </MudChip>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Days">
+                            <CellTemplate>
+                                <MudStack Row="true" Spacing="0">
+                                    @if (context.Item.Days.Contains(","))
+                                    {
+                                        foreach (var day in context.Item.Days.Split(","))
+                                        {
+                                            <MudChip Variant="Variant.Filled" Color="Color.Primary">
+                                                @day
+                                            </MudChip>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <MudChip Variant="Variant.Filled" Color="Color.Primary">
+                                            @context.Item.Days
+                                        </MudChip>
+                                    }
+                                </MudStack>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Start" Title="Time">
+                            <CellTemplate>
+                                <MudText>@($"{context.Item.Start} - {context.Item.End}")</MudText>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x" Title="Conflicts">
+                            <CellTemplate>
+                                @if (context.Item.CourseConflicts != null)
+                                {
+                                    foreach (var course in context.Item.CourseConflicts)
+                                    {
+                                        <MudChip Variant="Variant.Filled" Color="Color.Error">
+                                            @course
+                                        </MudChip>
+                                    }
+                                }
+                                else
+                                {
+                                    <MudChip Variant="Variant.Filled" Color="Color.Default">
+                                        None
+                                    </MudChip>
+                                }
+                            </CellTemplate>
+                        </PropertyColumn>
+                    </Columns>
+                </MudDataGrid>
+            }
+        </MudItem>
+        <MudItem xs="12" Class="flex flex-col">
+            <MudButton StartIcon="@Icons.Material.Filled.Refresh" Class="mx-4 mb-4" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary">
+                Resolve
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@inject HttpClient Http
+@inject ScheduleRepository ScheduleRepository
+
+@code {
+
+    private IEnumerable<string>? _blocks;
+    private IEnumerable<string>? _enrolled;
+    private IEnumerable<CourseSchedule>? _courses;
+    private IEnumerable<string>? _selectedBlocks;
+    private IEnumerable<string>? _selectedCourses;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var courses = await ScheduleRepository.GetSchedulesAsync();
+        _blocks = courses.Select(course => course.Block).Distinct();
+    }
+
+    private async Task OnBlocksChanged(IEnumerable<string> blocks)
+    {
+        _selectedBlocks = blocks;
+
+        var courses = await ScheduleRepository.GetSchedulesAsync(blocks: blocks);
+
+        _enrolled = courses.Where(course => blocks.Any(enrolledBlock => course.Block.Equals(enrolledBlock)))
+            .Select(course => course.CourseTitle)
+            .Distinct();
+
+        if (_selectedCourses != null)
+        {
+            _courses = await ScheduleRepository.GetSchedulesAsync(blocks: _selectedBlocks, courses: _selectedCourses, conflicts: true);
+        }
+    }
+
+    private async Task OnSelectedCoursesChanged(IEnumerable<string> selectedCourses)
+    {
+        _selectedCourses = selectedCourses;
+        var courses = await ScheduleRepository.GetSchedulesAsync(blocks: _selectedBlocks, courses: selectedCourses, conflicts: true);
+        _courses = courses;
+    }
+
+}

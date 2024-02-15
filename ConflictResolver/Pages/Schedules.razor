@@ -1,0 +1,118 @@
+﻿@page "/schedules"
+
+@using ConflictResolver.Models
+@using ConflictResolver.Services.Repositories
+
+<MudPaper Class="my-10 rounded-lg">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudText Typo="Typo.h6" Class="my-auto mx-4">Schedules</MudText>
+        </MudItem>
+        <MudItem xs="12" Class="flex flex-col">
+            <MudSelect Class="mx-4" Margin="Margin.Dense" TextChanged="@OnBlockChanged" MultiSelection="false" T="string" Placeholder="Select block..." Variant="Variant.Outlined">
+                @if (_blocks != null)
+                {
+                    foreach (var block in _blocks)
+                    {
+                        <MudSelectItem T="string" Value="block"/>
+                    }
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="12" Class="flex flex-col">
+            @if (_courses == null)
+            {
+                <MudText Class="mx-auto">No available schedule</MudText>
+            }
+            else
+            {
+                <MudToggleGroup T="string" ValueChanged="@OnDayFilterChanged" Class="mx-4 mb-4" Dense="true" FixedContent="true">
+                    <MudToggleItem Value="@("All")"/>
+                    <MudToggleItem Value="@("Mon")"/>
+                    <MudToggleItem Value="@("Tue")"/>
+                    <MudToggleItem Value="@("Wed")"/>
+                    <MudToggleItem Value="@("Thu")"/>
+                    <MudToggleItem Value="@("Fri")"/>
+                    <MudToggleItem Value="@("Sat")"/>
+                </MudToggleGroup>
+                <MudDataGrid Hover="true" Items="@_courses" Elevation="0">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Course"/>
+                        <PropertyColumn Property="x => x.CourseTitle" Title="Course Title"/>
+                        <PropertyColumn Property="x => x.ClassType" Title="Type">
+                            <CellTemplate>
+                                <MudChip Variant="Variant.Filled" Color="@(context.Item.ClassType.Equals("LEC") ? Color.Default : Color.Primary)">
+                                    @context.Item.ClassType
+                                </MudChip>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Days">
+                            <CellTemplate>
+                                <MudStack Row="true" Spacing="0">
+                                    @if (context.Item.Days.Contains(","))
+                                    {
+                                        foreach (var day in context.Item.Days.Split(","))
+                                        {
+                                            <MudChip Variant="Variant.Filled" Color="Color.Primary">
+                                                @day
+                                            </MudChip>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <MudChip Variant="Variant.Filled" Color="Color.Primary">
+                                            @context.Item.Days
+                                        </MudChip>
+                                    }
+                                </MudStack>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Start" Title="Time">
+                            <CellTemplate>
+                                <MudText>@($"{context.Item.Start} - {context.Item.End}")</MudText>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Room"/>
+                        <PropertyColumn Property="x => x.FacultyName" Title="Instructor"/>
+                    </Columns>
+                </MudDataGrid>
+            }
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@inject ScheduleRepository ScheduleRepository
+
+@code {
+
+    private string? _block;
+    private string? _dayFilter;
+    private IEnumerable<string>? _blocks;
+    private IEnumerable<CourseSchedule>? _courses;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var courses = await ScheduleRepository.GetSchedulesAsync();
+        _blocks = courses.Select(course => course.Block).Distinct();
+    }
+
+    private async Task OnBlockChanged(string value)
+    {
+        _block = value;
+
+        if (string.IsNullOrWhiteSpace(_dayFilter))
+        {
+            _courses = await ScheduleRepository.GetSchedulesAsync(blocks: new[] { _block });
+            return;
+        }
+        
+        _courses = await ScheduleRepository.GetSchedulesAsync(blocks: new[] { _block }, day: _dayFilter);
+    }
+
+    private async Task OnDayFilterChanged(string dayFilter)
+    {
+        _dayFilter = dayFilter;
+        _courses = await ScheduleRepository.GetSchedulesAsync(blocks: new[] { _block! }, day: _dayFilter);
+    }
+
+}
