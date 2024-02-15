@@ -54,12 +54,14 @@
                                 <MudStack Row="true" Spacing="0">
                                     @if (context.Item.Days.Contains(","))
                                     {
-                                        foreach (var day in context.Item.Days.Split(","))
-                                        {
-                                            <MudChip Variant="Variant.Filled" Color="Color.Primary">
-                                                @day
-                                            </MudChip>
-                                        }
+                                        <MudChipSet ReadOnly="true">
+                                            @foreach (var day in context.Item.Days.Split(","))
+                                            {
+                                                <MudChip Variant="Variant.Filled" Color="Color.Primary">
+                                                    @day
+                                                </MudChip>
+                                            }
+                                        </MudChipSet>
                                     }
                                     else
                                     {
@@ -79,12 +81,14 @@
                             <CellTemplate>
                                 @if (context.Item.CourseConflicts != null)
                                 {
-                                    foreach (var course in context.Item.CourseConflicts)
-                                    {
-                                        <MudChip Variant="Variant.Filled" Color="Color.Error">
-                                            @course
-                                        </MudChip>
-                                    }
+                                    <MudChipSet ReadOnly="true">
+                                        @foreach (var course in context.Item.CourseConflicts)
+                                        {
+                                            <MudChip Variant="Variant.Filled" Color="Color.Error">
+                                                @course
+                                            </MudChip>
+                                        }
+                                    </MudChipSet>
                                 }
                                 else
                                 {
