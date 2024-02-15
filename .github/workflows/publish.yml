@@ -25,7 +25,7 @@ jobs:
           dotnet publish -c Release -o release
 
       - name: copy index.html to 404.html
-        run: cp release/wwwroot/index.html release/wwwroot/404.html
+        run: cp bin/Release/net8.0/wwwroot/index.html release/wwwroot/404.html
 
       - name: Add .nojekyll file
         run: touch release/wwwroot/.nojekyll
