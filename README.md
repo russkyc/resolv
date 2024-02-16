@@ -7,9 +7,6 @@
     <img src="https://github.com/russkyc/resolv/actions/workflows/deploy.yml/badge.svg">
 </p>
 
-> [!NOTE]
-> Conflict resolving is not yet implemented, but conflict finder and schedules are implemented.
-
 <p style="text-align: justify">
 Resolv can automatically detect conflicting course schedules and suggest
 appropriate changes to limit or fully avoid schedule conflicts. It can
