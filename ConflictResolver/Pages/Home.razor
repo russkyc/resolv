@@ -5,6 +5,10 @@
 @using ConflictResolver.Utils.Extensions
 @using System.Text.Json
 @using System.Web
+@using Majorsoft.Blazor.Components.Common.JsInterop.Clipboard
+
+@inject IClipboardHandler ClipboardHandler
+@inject ISnackbar Snackbar
 
 <MudGrid Class="my-4" Spacing="8">
     <MudItem xs="12">
@@ -174,8 +178,8 @@
                         </MudDataGrid>
                     </MudItem>
                     <MudItem xs="12" Class="flex flex-col">
-                        <MudButton OnClick="@OnShareSchedule" StartIcon="@Icons.Material.Rounded.Share" Class="mx-4 mb-4" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary">
-                            Share
+                        <MudButton OnClick="@OnShareSchedule" StartIcon="@Icons.Material.Rounded.Link" Class="mx-4 mb-4" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary">
+                            Copy Share Link
                         </MudButton>
                     </MudItem>
                 </MudGrid>
@@ -271,7 +275,10 @@
 
     private async Task OnShareSchedule()
     {
-        NavigationManager.NavigateTo($"/resolve?courses={HttpUtility.UrlEncode(JsonSerializer.Serialize(_courses))}&alternatives={HttpUtility.UrlEncode(JsonSerializer.Serialize(_recommendedSchedules))}");
+        var sharingUrl = $"{NavigationManager.BaseUri}resolve?courses={HttpUtility.UrlEncode(JsonSerializer.Serialize(_courses))}&alternatives={HttpUtility.UrlEncode(JsonSerializer.Serialize(_recommendedSchedules))}";
+        await ClipboardHandler.CopyTextToClipboardAsync(sharingUrl);
+
+        Snackbar.Add("Sharing link has been copied to clipboard", Severity.Success);
     }
 
 }

@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using ConflictResolver.Services.Repositories;
+using Majorsoft.Blazor.Components.Common.JsInterop;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
@@ -33,13 +34,17 @@ public class Program
     {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
         builder.RootComponents.Add<App>("#app");
-        builder.RootComponents.Add<HeadOutlet>("head::after"); 
+        builder.RootComponents.Add<HeadOutlet>("head::after");
+        
 #if RELEASE
         builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://russkyc.github.io/resolv/") });
 #else
         builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 #endif
+        
         builder.Services.AddMudServices();
+        builder.Services.AddJsInteropExtensions();
+        
         builder.Services.AddScoped<ScheduleRepository>();
 
         await builder.Build().RunAsync();
