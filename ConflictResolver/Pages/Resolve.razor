@@ -1,0 +1,164 @@
+﻿@page "/resolve"
+
+@using ConflictResolver.Models
+@using ConflictResolver.Utils.Extensions
+@using System.Web
+@using System.Text.Json
+
+<MudStack Class="flex my-8" Spacing="8">
+    <MudPaper Class="rounded-lg">
+        <MudGrid>
+            <MudItem xs="12" Class="flex">
+                <MudText Typo="Typo.h6" Class="mt-4 mx-auto">Current Schedule</MudText>
+            </MudItem>
+            <MudItem xs="12" Class="flex flex-col">
+                <MudDataGrid Hover="true" Items="@_courses" Elevation="0">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Block"/>
+                        <PropertyColumn Property="x => x.Course"/>
+                        <PropertyColumn Property="x => x.CourseTitle" Title="Course Title"/>
+                        <PropertyColumn Property="x => x.ClassType" Title="Type">
+                            <CellTemplate>
+                                <MudChip Variant="Variant.Filled" Color="@(context.Item.ClassType.Equals("LEC") ? Color.Default : Color.Primary)">
+                                    @context.Item.ClassType
+                                </MudChip>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Sortable="false" Property="x => x.Days">
+                            <CellTemplate>
+                                <MudStack Row="true" Spacing="0">
+                                    <MudChipSet ReadOnly="true">
+                                        @foreach (var day in context.Item.Days)
+                                        {
+                                            <MudChip Variant="Variant.Filled" Color="Color.Primary">
+                                                @day.ToDayOfWeek()
+                                            </MudChip>
+                                        }
+                                    </MudChipSet>
+                                </MudStack>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Start" Title="Time">
+                            <CellTemplate>
+                                <MudText>@($"{context.Item.Start} - {context.Item.End}")</MudText>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Sortable="false" Property="x => x" Title="Conflicts">
+                            <CellTemplate>
+                                @if (context.Item.CourseConflicts != null)
+                                {
+                                    <MudChipSet ReadOnly="true">
+                                        @foreach (var course in context.Item.CourseConflicts)
+                                        {
+                                            <MudChip Variant="Variant.Filled" Color="Color.Error">
+                                                @course
+                                            </MudChip>
+                                        }
+                                    </MudChipSet>
+                                }
+                                else
+                                {
+                                    <MudChip Variant="Variant.Filled" Color="Color.Default">
+                                        None
+                                    </MudChip>
+                                }
+                            </CellTemplate>
+                        </PropertyColumn>
+                    </Columns>
+                </MudDataGrid>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+    <MudPaper Class="rounded-lg">
+        <MudGrid>
+            <MudItem xs="12" Class="flex">
+                <MudText Typo="Typo.h6" Class="mt-4 mx-auto">Conflict Alternatives</MudText>
+            </MudItem>
+            <MudItem xs="12" Class="flex flex-col">
+                <MudDataGrid Hover="true" Items="@_alternatives" Elevation="0" GroupExpanded="true">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Block"/>
+                        <PropertyColumn Property="x => x.Course" Groupable="true" Grouping="true"/>
+                        <PropertyColumn Property="x => x.CourseTitle" Title="Course Title"/>
+                        <PropertyColumn Property="x => x.ClassType" Title="Type">
+                            <CellTemplate>
+                                <MudChip Variant="Variant.Filled" Color="@(context.Item.ClassType.Equals("LEC") ? Color.Default : Color.Primary)">
+                                    @context.Item.ClassType
+                                </MudChip>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Sortable="false" Property="x => x.Days">
+                            <CellTemplate>
+                                <MudStack Row="true" Spacing="0">
+                                    <MudChipSet ReadOnly="true">
+                                        @foreach (var day in context.Item.Days)
+                                        {
+                                            <MudChip Variant="Variant.Filled" Color="Color.Primary">
+                                                @day.ToDayOfWeek()
+                                            </MudChip>
+                                        }
+                                    </MudChipSet>
+                                </MudStack>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Property="x => x.Start" Title="Time">
+                            <CellTemplate>
+                                <MudText>@($"{context.Item.Start} - {context.Item.End}")</MudText>
+                            </CellTemplate>
+                        </PropertyColumn>
+                        <PropertyColumn Sortable="false" Property="x => x" Title="Conflicts">
+                            <CellTemplate>
+                                @if (context.Item.CourseConflicts != null)
+                                {
+                                    <MudChipSet ReadOnly="true">
+                                        @foreach (var course in context.Item.CourseConflicts)
+                                        {
+                                            <MudChip Variant="Variant.Filled" Color="Color.Error">
+                                                @course
+                                            </MudChip>
+                                        }
+                                    </MudChipSet>
+                                }
+                                else
+                                {
+                                    <MudChip Variant="Variant.Filled" Color="Color.Default">
+                                        None
+                                    </MudChip>
+                                }
+                            </CellTemplate>
+                        </PropertyColumn>
+                    </Columns>
+                </MudDataGrid>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+    <MudStack Row="true" Class="mx-auto">
+        <MudText Class="mt-4 mx-auto">Generated by Resolv - <MudLink Href="https://github.com/russkyc/resolv">Github (Russkyc)</MudLink></MudText>
+    </MudStack>
+</MudStack>
+
+@code {
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "courses")]
+    public string? CourseData { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "alternatives")]
+    public string? AlternativeData { get; set; }
+    
+    private IEnumerable<CourseSchedule>? _courses { get; set; }
+    private IEnumerable<CourseSchedule>? _alternatives { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var data = HttpUtility.UrlDecode(CourseData);
+        var courses = JsonSerializer.Deserialize<IEnumerable<CourseSchedule>>(data);
+        _courses = courses;
+            
+        var alternativeData = HttpUtility.UrlDecode(AlternativeData);
+        var alternatives = JsonSerializer.Deserialize<IEnumerable<CourseSchedule>>(alternativeData);
+        _alternatives = alternatives;
+    }
+
+}

@@ -44,6 +44,6 @@ public record CourseSchedule
 
     public string Room { get; init; }
     public string FacultyName { get; init; }
-    [JsonIgnore] public bool Conflicts { get; set; }
-    [JsonIgnore] public IEnumerable<string>? CourseConflicts { get; set; }
+    public bool Conflicts { get; set; }
+    public IEnumerable<string>? CourseConflicts { get; set; }
 }

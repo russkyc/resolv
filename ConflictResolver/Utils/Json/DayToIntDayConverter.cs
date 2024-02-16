@@ -60,6 +60,16 @@ public class DayToIntDayConverter : JsonConverter<IEnumerable<int>>
 
     public override void Write(Utf8JsonWriter writer, IEnumerable<int> value, JsonSerializerOptions options)
     {
-        throw new NotImplementedException();
+        var values = value.Select(day => day switch
+        {
+            1 => "M",
+            2 => "T",
+            3 => "W",
+            4 => "TH",
+            5 => "F",
+            6 => "S"
+        });
+        var val = string.Join(",", values);
+        writer.WriteStringValue(val);
     }
 }

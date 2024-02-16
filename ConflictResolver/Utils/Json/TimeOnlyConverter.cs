@@ -38,6 +38,6 @@ public class TimeOnlyConverter : JsonConverter<TimeOnly>
 
     public override void Write(Utf8JsonWriter writer, TimeOnly value, JsonSerializerOptions options)
     {
-        writer.WriteRawValue(value.ToString(Format, CultureInfo.InvariantCulture));
+        writer.WriteStringValue(value.ToString(Format, CultureInfo.InvariantCulture));
     }
 }

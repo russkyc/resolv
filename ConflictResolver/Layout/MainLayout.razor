@@ -4,28 +4,40 @@
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 
-<MudLayout>
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
-        <MudSpacer/>
-        <MudButton Class="rounded-lg" Href="https://github.com/russkyc/resolv" Variant="Variant.Text">
-            <MudStack Row="true" Spacing="2" Class="flex flex-row">
-                <MudIcon Class="w-5" Icon="@Icons.Custom.Brands.GitHub"></MudIcon>
-                <MudText Class="text-sm my-auto">Visit GitHub Repo</MudText>
-            </MudStack>
-        </MudButton>
-    </MudAppBar>
-    <MudDrawer Variant="DrawerVariant.Responsive" @bind-Open="_drawerOpen" Elevation="2">
-        <MudDrawerContainer>
-            <NavMenu/>
-        </MudDrawerContainer>
-    </MudDrawer>
-    <MudMainContent>
-        <MudContainer Class="overflow-x-hidden" MaxWidth="MaxWidth.ExtraExtraLarge">
-            @Body
-        </MudContainer>
-    </MudMainContent>
-</MudLayout>
+@inject NavigationManager NavigationManager
+
+@if (NavigationManager.Uri.Contains("schedule?")
+     || NavigationManager.Uri.Contains("resolve?"))
+{
+    <MudContainer Class="overflow-x-hidden" MaxWidth="MaxWidth.ExtraExtraLarge">
+        @Body
+    </MudContainer>
+}
+else
+{
+    <MudLayout>
+        <MudAppBar Elevation="1">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())"/>
+            <MudSpacer/>
+            <MudButton Class="rounded-lg" Href="https://github.com/russkyc/resolv" Variant="Variant.Text">
+                <MudStack Row="true" Spacing="2" Class="flex flex-row">
+                    <MudIcon Class="w-5" Icon="@Icons.Custom.Brands.GitHub"></MudIcon>
+                    <MudText Class="text-sm my-auto">Visit GitHub Repo</MudText>
+                </MudStack>
+            </MudButton>
+        </MudAppBar>
+        <MudDrawer Variant="DrawerVariant.Responsive" @bind-Open="_drawerOpen" Elevation="2">
+            <MudDrawerContainer>
+                <NavMenu/>
+            </MudDrawerContainer>
+        </MudDrawer>
+        <MudMainContent>
+            <MudContainer Class="overflow-x-hidden" MaxWidth="MaxWidth.ExtraExtraLarge">
+                @Body
+            </MudContainer>
+        </MudMainContent>
+    </MudLayout>
+}
 
 @code {
     bool _drawerOpen = true;
