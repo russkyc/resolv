@@ -35,7 +35,7 @@ public class Program
         builder.RootComponents.Add<App>("#app");
         builder.RootComponents.Add<HeadOutlet>("head::after"); 
 #if RELEASE
-        builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://russkyc.github.io/schedule-conflicts-resolver/") });
+        builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://russkyc.github.io/resolv/") });
 #else
         builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 #endif
