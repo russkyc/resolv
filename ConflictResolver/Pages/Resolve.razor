@@ -154,11 +154,11 @@
 
     protected override void OnInitialized()
     {
-        var data = HttpUtility.UrlDecode(CourseData);
+        var data = Uri.UnescapeDataString(CourseData);
         var courses = JsonSerializer.Deserialize<IEnumerable<CourseSchedule>>(data);
         _courses = courses;
             
-        var alternativeData = HttpUtility.UrlDecode(AlternativeData);
+        var alternativeData = Uri.UnescapeDataString(AlternativeData);
         var alternatives = JsonSerializer.Deserialize<IEnumerable<CourseSchedule>>(alternativeData);
         _alternatives = alternatives;
     }

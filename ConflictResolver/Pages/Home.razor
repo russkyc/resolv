@@ -4,7 +4,6 @@
 @using ConflictResolver.Services.Repositories
 @using ConflictResolver.Utils.Extensions
 @using System.Text.Json
-@using System.Web
 @using Majorsoft.Blazor.Components.Common.JsInterop.Clipboard
 
 @inject IClipboardHandler ClipboardHandler
@@ -275,9 +274,8 @@
 
     private async Task OnShareSchedule()
     {
-        var sharingUrl = $"{NavigationManager.BaseUri}resolve?courses={HttpUtility.UrlEncode(JsonSerializer.Serialize(_courses))}&alternatives={HttpUtility.UrlEncode(JsonSerializer.Serialize(_recommendedSchedules))}";
+        var sharingUrl = $"{NavigationManager.BaseUri}resolve?courses={Uri.EscapeDataString(JsonSerializer.Serialize(_courses))}&alternatives={Uri.EscapeDataString(JsonSerializer.Serialize(_recommendedSchedules))}";
         await ClipboardHandler.CopyTextToClipboardAsync(sharingUrl);
-
         Snackbar.Add("Sharing link has been copied to clipboard", Severity.Success);
     }
 
