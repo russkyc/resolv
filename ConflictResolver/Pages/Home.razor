@@ -3,126 +3,207 @@
 @using ConflictResolver.Models
 @using ConflictResolver.Services.Repositories
 
-<MudPaper Class="my-10 rounded-lg">
-    <MudGrid>
-        <MudItem xs="12">
-            <MudText Typo="Typo.h6" Class="my-auto mx-4">Conflict Finder</MudText>
-        </MudItem>
-        <MudItem xs="12" Class="flex flex-col">
-            <MudSelect bind-SelectedValues="@_selectedBlocks" Class="mx-4" Margin="Margin.Dense" SelectedValuesChanged="@OnBlocksChanged" MultiSelection="true" T="string" Placeholder="Select Blocks..." Variant="Variant.Outlined">
-                @if (_blocks != null)
+<MudGrid Class="my-4" Spacing="8">
+    <MudItem xs="12">
+        <MudPaper Class="rounded-lg">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6" Class="my-auto mx-4">Schedule Conflict Finder</MudText>
+                </MudItem>
+                <MudItem xs="12" Class="flex flex-col">
+                    <MudSelect bind-SelectedValues="@_selectedBlocks" Class="mx-4" Margin="Margin.Dense" SelectedValuesChanged="@OnBlocksChanged" MultiSelection="true" T="string" Placeholder="Select Blocks..." Variant="Variant.Outlined">
+                        @if (_blocks != null)
+                        {
+                            foreach (var block in _blocks)
+                            {
+                                <MudSelectItem T="string" Value="block"/>
+                            }
+                        }
+                    </MudSelect>
+                </MudItem>
+                @if (_enrolled != null && _enrolled.Any())
                 {
-                    foreach (var block in _blocks)
-                    {
-                        <MudSelectItem T="string" Value="block"/>
-                    }
+                    <MudItem xs="12" Class="flex flex-col">
+                        <MudSelect SelectedValuesChanged="@OnSelectedCoursesChanged" Class="mx-4" Margin="Margin.Dense" MultiSelection="true" T="string" Placeholder="Select Courses..." Variant="Variant.Outlined">
+                            @foreach (var course in _enrolled)
+                            {
+                                <MudSelectItem T="string" Value="course"/>
+                            }
+                        </MudSelect>
+                    </MudItem>
                 }
-            </MudSelect>
-        </MudItem>
-        @if (_enrolled != null && _enrolled.Any())
-        {
-            <MudItem xs="12" Class="flex flex-col">
-                <MudSelect SelectedValuesChanged="@OnSelectedCoursesChanged" Class="mx-4" Margin="Margin.Dense" MultiSelection="true" T="string" Placeholder="Select Courses..." Variant="Variant.Outlined">
-                    @foreach (var course in _enrolled)
+                <MudItem xs="12" Class="flex flex-col">
+                    @if (_courses == null)
                     {
-                        <MudSelectItem T="string" Value="course"/>
+                        <MudText Class="mx-auto">No available schedule</MudText>
                     }
-                </MudSelect>
-            </MudItem>
-        }
-        <MudItem xs="12" Class="flex flex-col">
-            @if (_courses == null)
-            {
-                <MudText Class="mx-auto">No available schedule</MudText>
-            }
-            else
-            {
-                <MudDataGrid Hover="true" Items="@_courses" Elevation="0">
-                    <Columns>
-                        <PropertyColumn Property="x => x.Block"/>
-                        <PropertyColumn Property="x => x.Course"/>
-                        <PropertyColumn Property="x => x.CourseTitle" Title="Course Title"/>
-                        <PropertyColumn Property="x => x.ClassType" Title="Type">
-                            <CellTemplate>
-                                <MudChip Variant="Variant.Filled" Color="@(context.Item.ClassType.Equals("LEC") ? Color.Default : Color.Primary)">
-                                    @context.Item.ClassType
-                                </MudChip>
-                            </CellTemplate>
-                        </PropertyColumn>
-                        <PropertyColumn Sortable="false" Property="x => x.Days">
-                            <CellTemplate>
-                                <MudStack Row="true" Spacing="0">
-                                    @if (context.Item.Days.Contains(","))
-                                    {
-                                        <MudChipSet ReadOnly="true">
-                                            @foreach (var day in context.Item.Days.Split(","))
+                    else
+                    {
+                        <MudDataGrid Hover="true" Items="@_courses" Elevation="0">
+                            <Columns>
+                                <PropertyColumn Property="x => x.Block"/>
+                                <PropertyColumn Property="x => x.Course"/>
+                                <PropertyColumn Property="x => x.CourseTitle" Title="Course Title"/>
+                                <PropertyColumn Property="x => x.ClassType" Title="Type">
+                                    <CellTemplate>
+                                        <MudChip Variant="Variant.Filled" Color="@(context.Item.ClassType.Equals("LEC") ? Color.Default : Color.Primary)">
+                                            @context.Item.ClassType
+                                        </MudChip>
+                                    </CellTemplate>
+                                </PropertyColumn>
+                                <PropertyColumn Sortable="false" Property="x => x.Days">
+                                    <CellTemplate>
+                                        <MudStack Row="true" Spacing="0">
+                                            @if (context.Item.Days.Contains(","))
+                                            {
+                                                <MudChipSet ReadOnly="true">
+                                                    @foreach (var day in context.Item.Days.Split(","))
+                                                    {
+                                                        <MudChip Variant="Variant.Filled" Color="Color.Primary">
+                                                            @day
+                                                        </MudChip>
+                                                    }
+                                                </MudChipSet>
+                                            }
+                                            else
                                             {
                                                 <MudChip Variant="Variant.Filled" Color="Color.Primary">
-                                                    @day
+                                                    @context.Item.Days
                                                 </MudChip>
                                             }
-                                        </MudChipSet>
-                                    }
-                                    else
-                                    {
-                                        <MudChip Variant="Variant.Filled" Color="Color.Primary">
-                                            @context.Item.Days
-                                        </MudChip>
-                                    }
-                                </MudStack>
-                            </CellTemplate>
-                        </PropertyColumn>
-                        <PropertyColumn Property="x => x.Start" Title="Time">
-                            <CellTemplate>
-                                <MudText>@($"{context.Item.Start} - {context.Item.End}")</MudText>
-                            </CellTemplate>
-                        </PropertyColumn>
-                        <PropertyColumn Sortable="false" Property="x => x" Title="Conflicts">
-                            <CellTemplate>
-                                @if (context.Item.CourseConflicts != null)
-                                {
-                                    <MudChipSet ReadOnly="true">
-                                        @foreach (var course in context.Item.CourseConflicts)
+                                        </MudStack>
+                                    </CellTemplate>
+                                </PropertyColumn>
+                                <PropertyColumn Property="x => x.Start" Title="Time">
+                                    <CellTemplate>
+                                        <MudText>@($"{context.Item.Start} - {context.Item.End}")</MudText>
+                                    </CellTemplate>
+                                </PropertyColumn>
+                                <PropertyColumn Sortable="false" Property="x => x" Title="Conflicts">
+                                    <CellTemplate>
+                                        @if (context.Item.CourseConflicts != null)
                                         {
-                                            <MudChip Variant="Variant.Filled" Color="Color.Error">
-                                                @course
+                                            <MudChipSet ReadOnly="true">
+                                                @foreach (var course in context.Item.CourseConflicts)
+                                                {
+                                                    <MudChip Variant="Variant.Filled" Color="Color.Error">
+                                                        @course
+                                                    </MudChip>
+                                                }
+                                            </MudChipSet>
+                                        }
+                                        else
+                                        {
+                                            <MudChip Variant="Variant.Filled" Color="Color.Default">
+                                                None
                                             </MudChip>
                                         }
-                                    </MudChipSet>
-                                }
-                                else
-                                {
-                                    <MudChip Variant="Variant.Filled" Color="Color.Default">
-                                        None
-                                    </MudChip>
-                                }
-                            </CellTemplate>
-                        </PropertyColumn>
-                    </Columns>
-                </MudDataGrid>
-            }
+                                    </CellTemplate>
+                                </PropertyColumn>
+                            </Columns>
+                        </MudDataGrid>
+                    }
+                </MudItem>
+                @if (_courses != null && _courses.Any(course => course.Conflicts))
+                {
+                    <MudItem xs="12" Class="flex flex-col">
+                        <MudButton OnClick="@OnResolveConflictingSchedules" StartIcon="@Icons.Material.Filled.Refresh" Class="mx-4 mb-4" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary">
+                            Find Alternative Schedules For Conflicts
+                        </MudButton>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudPaper>
+    </MudItem>
+    @if (_recommendedSchedules.Any())
+    {
+        <MudItem xs="12">
+            <MudPaper Class="rounded-lg">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h6" Class="my-auto mx-4">Alternative Schedules</MudText>
+                    </MudItem>
+                    <MudItem xs="12" Class="flex flex-col">
+                        <MudDataGrid Hover="true" Items="@_recommendedSchedules" Elevation="0">
+                            <Columns>
+                                <PropertyColumn Property="x => x.Block"/>
+                                <PropertyColumn Property="x => x.Course"/>
+                                <PropertyColumn Property="x => x.CourseTitle" Title="Course Title"/>
+                                <PropertyColumn Property="x => x.ClassType" Title="Type">
+                                    <CellTemplate>
+                                        <MudChip Variant="Variant.Filled" Color="@(context.Item.ClassType.Equals("LEC") ? Color.Default : Color.Primary)">
+                                            @context.Item.ClassType
+                                        </MudChip>
+                                    </CellTemplate>
+                                </PropertyColumn>
+                                <PropertyColumn Sortable="false" Property="x => x.Days">
+                                    <CellTemplate>
+                                        <MudStack Row="true" Spacing="0">
+                                            @if (context.Item.Days.Contains(","))
+                                            {
+                                                <MudChipSet ReadOnly="true">
+                                                    @foreach (var day in context.Item.Days.Split(","))
+                                                    {
+                                                        <MudChip Variant="Variant.Filled" Color="Color.Primary">
+                                                            @day
+                                                        </MudChip>
+                                                    }
+                                                </MudChipSet>
+                                            }
+                                            else
+                                            {
+                                                <MudChip Variant="Variant.Filled" Color="Color.Primary">
+                                                    @context.Item.Days
+                                                </MudChip>
+                                            }
+                                        </MudStack>
+                                    </CellTemplate>
+                                </PropertyColumn>
+                                <PropertyColumn Property="x => x.Start" Title="Time">
+                                    <CellTemplate>
+                                        <MudText>@($"{context.Item.Start} - {context.Item.End}")</MudText>
+                                    </CellTemplate>
+                                </PropertyColumn>
+                                <PropertyColumn Sortable="false" Property="x => x" Title="Conflicts">
+                                    <CellTemplate>
+                                        @if (context.Item.CourseConflicts != null)
+                                        {
+                                            <MudChipSet ReadOnly="true">
+                                                @foreach (var course in context.Item.CourseConflicts)
+                                                {
+                                                    <MudChip Variant="Variant.Filled" Color="Color.Error">
+                                                        @course
+                                                    </MudChip>
+                                                }
+                                            </MudChipSet>
+                                        }
+                                        else
+                                        {
+                                            <MudChip Variant="Variant.Filled" Color="Color.Default">
+                                                None
+                                            </MudChip>
+                                        }
+                                    </CellTemplate>
+                                </PropertyColumn>
+                            </Columns>
+                        </MudDataGrid>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
         </MudItem>
-        @if (_courses != null && _courses.Any(course => course.Conflicts))
-        {
-            <MudItem xs="12" Class="flex flex-col">
-                <MudButton StartIcon="@Icons.Material.Filled.Refresh" Class="mx-4 mb-4" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary">
-                    Resolve
-                </MudButton>
-            </MudItem>
-        }
-    </MudGrid>
-</MudPaper>
+    }
+</MudGrid>
 
-@inject HttpClient Http
 @inject ScheduleRepository ScheduleRepository
 
 @code {
 
     private IEnumerable<string>? _blocks;
     private IEnumerable<string>? _enrolled;
-    private IEnumerable<CourseSchedule>? _courses;
+    private List<CourseSchedule>? _courses;
     private IEnumerable<string>? _selectedBlocks;
     private IEnumerable<string>? _selectedCourses;
+    private List<CourseSchedule> _recommendedSchedules = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -149,8 +230,49 @@
     private async Task OnSelectedCoursesChanged(IEnumerable<string> selectedCourses)
     {
         _selectedCourses = selectedCourses;
-        var courses = await ScheduleRepository.GetSchedulesAsync(blocks: _selectedBlocks, courses: selectedCourses, conflicts: true);
-        _courses = courses;
+        _courses = await ScheduleRepository.GetSchedulesAsync(blocks: _selectedBlocks, courses: selectedCourses, conflicts: true);
+    }
+
+    private async Task OnResolveConflictingSchedules()
+    {
+        _recommendedSchedules.Clear();
+        var conflictingSchedules = _courses.Where(course => course.Conflicts);
+        foreach (var conflictingSchedule in conflictingSchedules)
+        {
+            var alternativeSchedules = await ScheduleRepository.GetSchedulesAsync(
+                courses: new[]
+                {
+                    conflictingSchedule.CourseTitle
+                });
+
+            var recommendedAlternatives = alternativeSchedules.Where(
+                alternativeSchedule => !_courses.Any(course => course.Days
+                                                                   .Split(",")
+                                                                   .Any(scheduleDay =>
+                                                                       alternativeSchedule
+                                                                           .Days
+                                                                           .Split(",")
+                                                                           .Any(referenceDay =>
+                                                                               referenceDay.Equals(scheduleDay)))
+                                                               && alternativeSchedule.Start >= course.Start
+                                                               && alternativeSchedule.Start < course.End));
+
+            _recommendedSchedules.AddRange(recommendedAlternatives);
+        }
+
+        _recommendedSchedules = _recommendedSchedules.Where(
+            alternativeSchedule => !_recommendedSchedules.Any(course => course.Days
+                                                                            .Split(",")
+                                                                            .Any(scheduleDay =>
+                                                                                alternativeSchedule
+                                                                                    .Days
+                                                                                    .Split(",")
+                                                                                    .Any(referenceDay =>
+                                                                                        referenceDay.Equals(scheduleDay)))
+                                                                        && alternativeSchedule.Start >= course.Start
+                                                                        && alternativeSchedule.Start < course.End
+                                                                        && !alternativeSchedule.Course.Equals(course.Course))).Distinct().ToList();
+
     }
 
 }
