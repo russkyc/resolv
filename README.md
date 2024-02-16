@@ -1,5 +1,15 @@
 ﻿<h2 align="center">Resolv - A Conflict Resolver for STI College Legazpi Tertiary IT Students</h2>
 
+> [!NOTE]
+> Conflict resolving is not yet implemented, but conflict finder and schedules are implemented.
+
+<p align="center">
+    <img src="https://img.shields.io/badge/-NET%208.0-blueviolet?color=1f72de&label=NET" alt="">
+    <img src="https://img.shields.io/github/license/russkyc/resolv">
+    <img src="https://img.shields.io/github/issues/russkyc/resolv">
+    <img src="https://github.com/russkyc/resolv/actions/workflows/deploy.yml/badge.svg">
+</p>
+
 <p style="text-align: justify">
 Resolv can automatically detect conflicting course schedules and suggest
 appropriate changes to limit or fully avoid schedule conflicts. It can
