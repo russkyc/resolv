@@ -1,0 +1,28 @@
+@import '';
+
+/* _content/Majorsoft.Blazor.Components.Common.JsInterop/Scroll/ScrollToPageBottom.razor.rz.scp.css */
+.scrollToPageBottom[b-qkgcz3eaul] {
+    position: fixed;
+    z-index: 20;
+    cursor: pointer;
+    transition: opacity 0.25s linear;
+    outline: 0px;
+}
+
+.scrollToPageBottom.hidden[b-qkgcz3eaul] {
+    cursor: pointer;
+    pointer-events: none;
+}
+/* _content/Majorsoft.Blazor.Components.Common.JsInterop/Scroll/ScrollToPageTop.razor.rz.scp.css */
+.scrollToPageTop[b-we76z3r7up] {
+    position: fixed;
+    z-index: 20;
+    cursor: pointer;
+    transition: opacity 0.25s linear;
+    outline: 0px;
+}
+
+.scrollToPageTop.hidden[b-we76z3r7up] {
+    cursor: pointer;
+    pointer-events: none;
+}
