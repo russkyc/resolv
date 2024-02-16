@@ -2,6 +2,7 @@
 
 @using ConflictResolver.Models
 @using ConflictResolver.Services.Repositories
+@using ConflictResolver.Utils.Extensions
 
 <MudGrid Class="my-4" Spacing="8">
     <MudItem xs="12">
@@ -54,23 +55,14 @@
                                 <PropertyColumn Sortable="false" Property="x => x.Days">
                                     <CellTemplate>
                                         <MudStack Row="true" Spacing="0">
-                                            @if (context.Item.Days.Contains(","))
-                                            {
-                                                <MudChipSet ReadOnly="true">
-                                                    @foreach (var day in context.Item.Days.Split(","))
-                                                    {
-                                                        <MudChip Variant="Variant.Filled" Color="Color.Primary">
-                                                            @day
-                                                        </MudChip>
-                                                    }
-                                                </MudChipSet>
-                                            }
-                                            else
-                                            {
-                                                <MudChip Variant="Variant.Filled" Color="Color.Primary">
-                                                    @context.Item.Days
-                                                </MudChip>
-                                            }
+                                            <MudChipSet ReadOnly="true">
+                                                @foreach (var day in context.Item.Days)
+                                                {
+                                                    <MudChip Variant="Variant.Filled" Color="Color.Primary">
+                                                        @day.ToDayOfWeek()
+                                                    </MudChip>
+                                                }
+                                            </MudChipSet>
                                         </MudStack>
                                     </CellTemplate>
                                 </PropertyColumn>
@@ -139,21 +131,10 @@
                                 <PropertyColumn Sortable="false" Property="x => x.Days">
                                     <CellTemplate>
                                         <MudStack Row="true" Spacing="0">
-                                            @if (context.Item.Days.Contains(","))
-                                            {
-                                                <MudChipSet ReadOnly="true">
-                                                    @foreach (var day in context.Item.Days.Split(","))
-                                                    {
-                                                        <MudChip Variant="Variant.Filled" Color="Color.Primary">
-                                                            @day
-                                                        </MudChip>
-                                                    }
-                                                </MudChipSet>
-                                            }
-                                            else
+                                            @foreach (var day in context.Item.Days)
                                             {
                                                 <MudChip Variant="Variant.Filled" Color="Color.Primary">
-                                                    @context.Item.Days
+                                                    @day.ToDayOfWeek()
                                                 </MudChip>
                                             }
                                         </MudStack>
@@ -208,7 +189,9 @@
     protected override async Task OnInitializedAsync()
     {
         var courses = await ScheduleRepository.GetSchedulesAsync();
-        _blocks = courses.Select(course => course.Block).Distinct();
+        _blocks = courses.Select(course => course.Block)
+            .Distinct()
+            .OrderBy(block => block);
     }
 
     private async Task OnBlocksChanged(IEnumerable<string> blocks)
@@ -219,6 +202,7 @@
 
         _enrolled = courses.Where(course => blocks.Any(enrolledBlock => course.Block.Equals(enrolledBlock)))
             .Select(course => course.CourseTitle)
+            .OrderBy(course => course)
             .Distinct();
 
         if (_selectedCourses != null)
@@ -247,13 +231,11 @@
 
             var recommendedAlternatives = alternativeSchedules.Where(
                 alternativeSchedule => !_courses.Any(course => course.Days
-                                                                   .Split(",")
                                                                    .Any(scheduleDay =>
                                                                        alternativeSchedule
                                                                            .Days
-                                                                           .Split(",")
                                                                            .Any(referenceDay =>
-                                                                               referenceDay.Equals(scheduleDay)))
+                                                                               referenceDay == scheduleDay))
                                                                && alternativeSchedule.Start >= course.Start
                                                                && alternativeSchedule.Start < course.End));
 
@@ -262,17 +244,19 @@
 
         _recommendedSchedules = _recommendedSchedules.Where(
             alternativeSchedule => !_recommendedSchedules.Any(course => course.Days
-                                                                            .Split(",")
                                                                             .Any(scheduleDay =>
                                                                                 alternativeSchedule
                                                                                     .Days
-                                                                                    .Split(",")
                                                                                     .Any(referenceDay =>
-                                                                                        referenceDay.Equals(scheduleDay)))
+                                                                                        referenceDay == scheduleDay))
                                                                         && alternativeSchedule.Start >= course.Start
                                                                         && alternativeSchedule.Start < course.End
-                                                                        && !alternativeSchedule.Course.Equals(course.Course))).Distinct().ToList();
-
+                                                                        && !alternativeSchedule.Course.Equals(course.Course)))
+            .Distinct()
+            .OrderBy(schedule => schedule.CourseTitle)
+            .ThenBy(schedule => schedule.Days.Min())
+            .ThenBy(schedule => schedule.Start)
+            .ToList();
     }
 
 }

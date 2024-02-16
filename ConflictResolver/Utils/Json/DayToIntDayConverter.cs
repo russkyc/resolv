@@ -20,30 +20,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using ConflictResolver.Utils.Json;
 
-namespace ConflictResolver.Models;
+namespace ConflictResolver.Utils.Json;
 
-public record CourseSchedule
+public class DayToIntDayConverter : JsonConverter<IEnumerable<int>>
 {
-    public string Block { get; init; }
-    public string Course { get; init; }
-    public string CourseTitle { get; init; }
-    public string ClassType { get; init; }
-    public double Units { get; init; }
-    
-    [JsonConverter(typeof(DayToIntDayConverter))]
-    public IEnumerable<int> Days { get; init; }
+    public override IEnumerable<int>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var str = (string)reader.GetString();
 
-    [JsonConverter(typeof(TimeOnlyConverter))]
-    public TimeOnly Start { get; init; }
+        if (str.Contains(","))
+        {
+            return str.Split(",").Select(day => day switch
+            {
+                "M" => 1,
+                "T" => 2,
+                "W" => 3,
+                "TH" => 4,
+                "F" => 5,
+                "S" => 6
+            });
+        }
 
-    [JsonConverter(typeof(TimeOnlyConverter))]
-    public TimeOnly End { get; init; }
+        return new int[]
+        {
+            str switch
+            {
+                "M" => 1,
+                "T" => 2,
+                "W" => 3,
+                "TH" => 4,
+                "F" => 5,
+                "S" => 6
+            }
+        };
+    }
 
-    public string Room { get; init; }
-    public string FacultyName { get; init; }
-    [JsonIgnore] public bool Conflicts { get; set; }
-    [JsonIgnore] public IEnumerable<string>? CourseConflicts { get; set; }
+    public override void Write(Utf8JsonWriter writer, IEnumerable<int> value, JsonSerializerOptions options)
+    {
+        throw new NotImplementedException();
+    }
 }

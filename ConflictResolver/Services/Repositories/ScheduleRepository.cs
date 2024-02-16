@@ -59,25 +59,15 @@ public class ScheduleRepository
             if (!day.Equals("All"))
             {
                 schedules = schedules?.Where(course => blocks.Any(block => course.Block.Equals(block))
-                                                       && course.Days.Split(",").Any()
-                        ? course.Days.Split(",").Any(dayId => dayId.Equals(day switch
-                        {
-                            "Mon" => "M",
-                            "Tue" => "T",
-                            "Wed" => "W",
-                            "Thu" => "TH",
-                            "Fri" => "F",
-                            "Sat" => "S"
-                        }, StringComparison.OrdinalIgnoreCase))
-                        : course.Days.Equals(day switch
-                        {
-                            "Mon" => "M",
-                            "Tue" => "T",
-                            "Wed" => "W",
-                            "Thu" => "TH",
-                            "Fri" => "F",
-                            "Sat" => "S"
-                        }, StringComparison.OrdinalIgnoreCase))
+                                                       && course.Days.Any(dayId => dayId == day switch
+                                                       {
+                                                           "Mon" => 1,
+                                                           "Tue" => 2,
+                                                           "Wed" => 3,
+                                                           "Thu" => 4,
+                                                           "Fri" => 5,
+                                                           "Sat" => 6
+                                                       }))
                     .ToList();
             }
         }
@@ -89,13 +79,11 @@ public class ScheduleRepository
             {
                 var conflictSchedules = schedules.Where(schedule => courseSchedule
                                                                         .Days
-                                                                        .Split(",")
                                                                         .Any(scheduleDay =>
                                                                             schedule
                                                                                 .Days
-                                                                                .Split(",")
                                                                                 .Any(referenceDay =>
-                                                                                    referenceDay.Equals(scheduleDay)))
+                                                                                    referenceDay == scheduleDay))
                                                                     && courseSchedule.Start >= schedule.Start
                                                                     && courseSchedule.Start < schedule.End
                                                                     && !courseSchedule.Course.Equals(schedule.Course));
@@ -113,6 +101,8 @@ public class ScheduleRepository
             }
         }
 
-        return schedules;
+        return schedules.OrderBy(schedule => schedule.Days.Min())
+            .ThenBy(schedule => schedule.Start)
+            .ToList();
     }
 }

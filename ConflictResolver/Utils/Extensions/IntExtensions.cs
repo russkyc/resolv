@@ -20,30 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Text.Json.Serialization;
-using ConflictResolver.Utils.Json;
+namespace ConflictResolver.Utils.Extensions;
 
-namespace ConflictResolver.Models;
-
-public record CourseSchedule
+public static class IntExtensions
 {
-    public string Block { get; init; }
-    public string Course { get; init; }
-    public string CourseTitle { get; init; }
-    public string ClassType { get; init; }
-    public double Units { get; init; }
-    
-    [JsonConverter(typeof(DayToIntDayConverter))]
-    public IEnumerable<int> Days { get; init; }
-
-    [JsonConverter(typeof(TimeOnlyConverter))]
-    public TimeOnly Start { get; init; }
-
-    [JsonConverter(typeof(TimeOnlyConverter))]
-    public TimeOnly End { get; init; }
-
-    public string Room { get; init; }
-    public string FacultyName { get; init; }
-    [JsonIgnore] public bool Conflicts { get; set; }
-    [JsonIgnore] public IEnumerable<string>? CourseConflicts { get; set; }
+    public static string ToDayOfWeek(this int day)
+    {
+        return day switch
+        {
+            1 => "M",
+            2 => "T",
+            3 => "W",
+            4 => "TH",
+            5 => "F",
+            6 => "S"
+        };
+    }
 }

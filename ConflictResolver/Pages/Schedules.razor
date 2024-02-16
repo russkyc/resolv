@@ -2,6 +2,7 @@
 
 @using ConflictResolver.Models
 @using ConflictResolver.Services.Repositories
+@using ConflictResolver.Utils.Extensions
 
 <MudGrid Class="my-4" Spacing="8">
     <MudItem xs="12">
@@ -51,21 +52,14 @@
                                 <PropertyColumn Property="x => x.Days">
                                     <CellTemplate>
                                         <MudStack Row="true" Spacing="0">
-                                            @if (context.Item.Days.Contains(","))
-                                            {
-                                                foreach (var day in context.Item.Days.Split(","))
+                                            <MudChipSet ReadOnly="true">
+                                                @foreach (var day in context.Item.Days)
                                                 {
                                                     <MudChip Variant="Variant.Filled" Color="Color.Primary">
-                                                        @day
+                                                        @day.ToDayOfWeek()
                                                     </MudChip>
                                                 }
-                                            }
-                                            else
-                                            {
-                                                <MudChip Variant="Variant.Filled" Color="Color.Primary">
-                                                    @context.Item.Days
-                                                </MudChip>
-                                            }
+                                            </MudChipSet>
                                         </MudStack>
                                     </CellTemplate>
                                 </PropertyColumn>
@@ -97,7 +91,9 @@
     protected override async Task OnInitializedAsync()
     {
         var courses = await ScheduleRepository.GetSchedulesAsync();
-        _blocks = courses.Select(course => course.Block).Distinct();
+        _blocks = courses.Select(course => course.Block)
+            .Distinct()
+            .OrderBy(block => block);
     }
 
     private async Task OnBlockChanged(string value)
