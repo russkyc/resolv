@@ -116,10 +116,10 @@
                         <MudText Typo="Typo.h6" Class="my-auto mx-4">Alternative Schedules</MudText>
                     </MudItem>
                     <MudItem xs="12" Class="flex flex-col">
-                        <MudDataGrid Hover="true" Items="@_recommendedSchedules" Elevation="0">
+                        <MudDataGrid Hover="true" Items="@_recommendedSchedules" Elevation="0" GroupExpanded="true">
                             <Columns>
                                 <PropertyColumn Property="x => x.Block"/>
-                                <PropertyColumn Property="x => x.Course"/>
+                                <PropertyColumn Property="x => x.Course" Groupable="true" Grouping="true"/>
                                 <PropertyColumn Property="x => x.CourseTitle" Title="Course Title"/>
                                 <PropertyColumn Property="x => x.ClassType" Title="Type">
                                     <CellTemplate>
