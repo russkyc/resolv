@@ -1,4 +1,6 @@
-﻿<h2 align="center">Resolv - A Conflict Resolver for STI College Legazpi Tertiary IT Students</h2>
+﻿<img src=".github/images/banner.svg" style="width: 100%;" />
+
+<h2 align="center">Resolv - A Conflict Resolver for STI College Legazpi Tertiary IT Students</h2>
 
 <p align="center">
     <img src="https://img.shields.io/badge/-NET%208.0-blueviolet?color=1f72de&label=NET" alt="">
