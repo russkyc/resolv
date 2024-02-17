@@ -33,20 +33,28 @@ public class Program
     public static async Task Main(string[] args)
     {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
-        builder.RootComponents.Add<App>("#app");
-        builder.RootComponents.Add<HeadOutlet>("head::after");
-        
-#if RELEASE
-        builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://russkyc.github.io/resolv/") });
-#else
-        builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-#endif
-        
-        builder.Services.AddMudServices();
-        builder.Services.AddJsInteropExtensions();
-        
-        builder.Services.AddScoped<ScheduleRepository>();
+        if (!builder.RootComponents.Any())
+        {
+            builder.RootComponents.Add<App>("#app");
+            builder.RootComponents.Add<HeadOutlet>("head::after");
+        }
+
+        ConfigureServices(builder.Services,builder.HostEnvironment.BaseAddress);
 
         await builder.Build().RunAsync();
+    }
+    
+    private static void ConfigureServices(IServiceCollection services, string baseAddress)
+    {
+#if RELEASE
+        services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://russkyc.github.io/resolv/") });
+#else
+        services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseAddress) });
+#endif
+        
+        services.AddMudServices();
+        services.AddJsInteropExtensions();
+        
+        services.AddScoped<ScheduleRepository>();
     }
 }
