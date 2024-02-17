@@ -13,10 +13,24 @@
 Resolv can automatically detect conflicting course schedules and suggest
 appropriate changes to limit or fully avoid schedule conflicts. It can
 also provide all course schedules for each blocks, including the ability
-to filter course schedules by day.
+to filter course schedules by day. You can also share your schedule conflict
+resolver recommendations to anyone!
 </p>
+
+### :sparkles: Demo
+
+<img src=".github/images/conflict-resolver.gif" style="width: 100%;" />
 
 ### :camera: Screenshots
 
-<img src=".github/images/resolver.png" style="width: 100%;" />
-<img src=".github/images/schedule.png" style="width: 100%;" />
+Conflict Resolver
+
+<img src=".github/images/resolving.png" style="width: 100%;" />
+
+Schedules
+
+<img src=".github/images/schedules.png" style="width: 100%;" />
+
+Shared Schedule Preview
+
+<img src=".github/images/sharing.png" style="width: 100%;" />
