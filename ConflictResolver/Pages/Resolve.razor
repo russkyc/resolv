@@ -7,6 +7,8 @@
 @inject NavigationManager NavigationManager
 @inject ScheduleRepository ScheduleRepository
 
+<PageTitle>@_pageTitle</PageTitle>
+
 <MudStack Class="flex my-8" Spacing="8">
     <MudPaper Class="rounded-lg">
         <MudGrid>
@@ -157,6 +159,7 @@
     [SupplyParameterFromQuery(Name = "alternatives")]
     public string? AlternativeData { get; set; }
 
+    private string? _pageTitle;
     private IEnumerable<CourseSchedule>? _courses { get; set; }
     private IEnumerable<CourseSchedule>? _alternatives { get; set; }
 
@@ -168,6 +171,7 @@
         var alternatives = AlternativeData.DeserializeAndUnescape<IEnumerable<string>>();
         var alternativeSchedules = await ScheduleRepository.GetSchedulesByCourseCodeAsync(blocks: recommendedBlocks, courses: alternatives);
 
+        _pageTitle = $"Resolv - Schedule Alternatives for {string.Join(", ",alternatives.Distinct())}";
         _courses = await ScheduleRepository.GetSchedulesByCourseCodeAsync(blocks: blocks, courses: courses, conflicts: true);
 
         _alternatives = alternativeSchedules

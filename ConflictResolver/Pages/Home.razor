@@ -177,7 +177,7 @@
                         </MudDataGrid>
                     </MudItem>
                     <MudItem xs="12" Class="flex flex-col">
-                        <MudButton OnClick="@OnShareSchedule" StartIcon="@Icons.Material.Rounded.Link" Class="mx-4 mb-4" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary">
+                        <MudButton Disabled="@_isGeneratingShareLink" OnClick="@OnShareSchedule" StartIcon="@Icons.Material.Rounded.Link" Class="mx-4 mb-4" DisableElevation="true" Variant="Variant.Filled" Color="Color.Primary">
                             Copy Share Link
                         </MudButton>
                     </MudItem>
@@ -199,6 +199,8 @@
     private IEnumerable<string>? _selectedCourses;
     private List<CourseSchedule> _recommendedSchedules = new();
 
+    private bool _isGeneratingShareLink = false;
+    
     protected override async Task OnInitializedAsync()
     {
         var courses = await ScheduleRepository.GetSchedulesAsync();
@@ -274,13 +276,17 @@
 
     private async Task OnShareSchedule()
     {
+        _isGeneratingShareLink = true;
         var schedules = _courses.Select(course => course.Course);
         var recommendedSchedules = _recommendedSchedules.Select(course => course.Course);
         var recommendedBlocks = _recommendedSchedules.Select(course => course.Block);
         var sharingUrl = $"{NavigationManager.BaseUri}resolve?blocks={_selectedBlocks.SerializeAndEscape()}&recommendedBlocks={recommendedBlocks.SerializeAndEscape()}&courses={schedules.SerializeAndEscape()}&alternatives={recommendedSchedules.SerializeAndEscape()}";
         
         await ClipboardHandler.CopyTextToClipboardAsync(sharingUrl);
+        await Task.Delay(500);
+        
         Snackbar.Add("Sharing link has been copied to clipboard", Severity.Success);
+        _isGeneratingShareLink = false;
     }
 
 }
