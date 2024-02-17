@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "ConflictResolver",
   "resources": {
-    "hash": "sha256-3zKrQ4Zb/bQYt2Km4ki4OM2l9aXOyAnl2oTbsvdvfBE=",
+    "hash": "sha256-W8WEFU3oDFTTVU5z4NgaVnnvq8El2NJydkvchkrwExw=",
     "jsModuleNative": {
       "dotnet.native.8.0.2.jgt5nhn140.js": "sha256-gPMK16QWoJSTxorlZJqcVtbBRTniIQWlLsJN2O4cJHg="
     },
@@ -17,7 +17,7 @@
       "icudt_no_CJK.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
     },
     "assembly": {
-      "ConflictResolver.wasm": "sha256-GDweVi9iIwngvcB+TPENXeFdxlo4w0QehB2fRHEA/qE=",
+      "ConflictResolver.wasm": "sha256-7hJjJNscAZ444C+xOl/9I3bnpx2SyEuxtsw8898C1EM=",
       "Majorsoft.Blazor.Components.Common.JsInterop.wasm": "sha256-VUW8vJHndvx8ttnIm41ettdr/vLeYXbalBVEy3+v0jo=",
       "Microsoft.AspNetCore.Components.Forms.wasm": "sha256-HmzLzLW/wNN6dzLwpIQO++L72TzDel867f4sbij3BIU=",
       "Microsoft.AspNetCore.Components.wasm": "sha256-NKOu+KQdrwJpLs6tcLgRAdKVn4+U08dPNCwAKE79a2I=",
