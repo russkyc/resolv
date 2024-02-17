@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "ConflictResolver",
   "resources": {
-    "hash": "sha256-keKoqQCcuk6ykdRFnwdWngRP/mxIKkllhdKA4wnwyII=",
+    "hash": "sha256-0CVzKVT1IHHaDotN36Nj93iRn7zqtl6Zak7HUV3vJBQ=",
     "jsModuleNative": {
       "dotnet.native.8.0.2.jgt5nhn140.js": "sha256-gPMK16QWoJSTxorlZJqcVtbBRTniIQWlLsJN2O4cJHg="
     },
@@ -17,12 +17,12 @@
       "icudt_no_CJK.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
     },
     "assembly": {
-      "ConflictResolver.wasm": "sha256-P1bIze0MrJeKG4xG1TBEZ9SqPjfLPACyMYuflOS0J/4=",
+      "ConflictResolver.wasm": "sha256-xQK24T+yjH9CZnTvkJkbVnD6VoUJSuGEm9w3Kho9dQ8=",
       "Majorsoft.Blazor.Components.Common.JsInterop.wasm": "sha256-VUW8vJHndvx8ttnIm41ettdr/vLeYXbalBVEy3+v0jo=",
       "Microsoft.AspNetCore.Components.Forms.wasm": "sha256-HmzLzLW/wNN6dzLwpIQO++L72TzDel867f4sbij3BIU=",
       "Microsoft.AspNetCore.Components.wasm": "sha256-NKOu+KQdrwJpLs6tcLgRAdKVn4+U08dPNCwAKE79a2I=",
       "Microsoft.AspNetCore.Components.Web.wasm": "sha256-SALfDUlHduSWeS+r1s0Zq+WjMmyvv1cHUquHA0Ne6qg=",
-      "Microsoft.AspNetCore.Components.WebAssembly.wasm": "sha256-vOYUxJenhpqw4oK5b61FP/mlyRZu3zgVemvtISW29fs=",
+      "Microsoft.AspNetCore.Components.WebAssembly.wasm": "sha256-p5LVrZqeu+4xOXRiZuuN4LzBvOFih8r42Kf5aspdflA=",
       "Microsoft.Extensions.Configuration.Abstractions.wasm": "sha256-87sn2TYqgdZ95sXmavjKEzoEfMgHnYQ9LOvnMX+aZcI=",
       "Microsoft.Extensions.Configuration.Json.wasm": "sha256-Sxmy2ZS134URxbHEvdbS6NcQ3zXS7UWx/5ZPpwiW7FA=",
       "Microsoft.Extensions.Configuration.wasm": "sha256-jYqHUZ07UYWc8POk7xhas6xQYH7t1qoTcylqoDqncJk=",
@@ -61,12 +61,6 @@
       "System.Text.Json.wasm": "sha256-iCWKLFzb1QC7gyvwIAShHyxHx1F92R2kHhtvCr3wFeY=",
       "System.Text.RegularExpressions.wasm": "sha256-e/pkAumCMhN4/ACL1FQb3xNtCIzZ27NggYTFRSwbHfg=",
       "System.wasm": "sha256-n7POuPtNGmUEzGtZKZtOEEpj+CuOoQ/qVWMgWhN7NXU="
-    },
-    "libraryInitializers": {
-      "_content/BlazorWasmPreRendering.Build/BlazorWasmPreRendering.Build.lib.module.js": "sha256-Z094C6tvTOKvix221ZuSPsaaNvGOp0XKqThmB4vfuOA="
-    },
-    "modulesAfterConfigLoaded": {
-      "../_content/BlazorWasmPreRendering.Build/BlazorWasmPreRendering.Build.lib.module.js": "sha256-Z094C6tvTOKvix221ZuSPsaaNvGOp0XKqThmB4vfuOA="
     }
   },
   "cacheBootResources": true,
