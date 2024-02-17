@@ -2,10 +2,10 @@
 
 @using ConflictResolver.Models
 @using ConflictResolver.Utils.Extensions
-@using System.Web
-@using System.Text.Json
+@using ConflictResolver.Services.Repositories
 
 @inject NavigationManager NavigationManager
+@inject ScheduleRepository ScheduleRepository
 
 <MudStack Class="flex my-8" Spacing="8">
     <MudPaper Class="rounded-lg">
@@ -142,25 +142,38 @@
 @code {
 
     [Parameter]
+    [SupplyParameterFromQuery(Name = "blocks")]
+    public string? BlockData { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "recommendedBlocks")]
+    public string? RecommendedBlockData { get; set; }
+
+    [Parameter]
     [SupplyParameterFromQuery(Name = "courses")]
     public string? CourseData { get; set; }
 
     [Parameter]
     [SupplyParameterFromQuery(Name = "alternatives")]
     public string? AlternativeData { get; set; }
-    
+
     private IEnumerable<CourseSchedule>? _courses { get; set; }
     private IEnumerable<CourseSchedule>? _alternatives { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        var data = Uri.UnescapeDataString(CourseData);
-        var courses = JsonSerializer.Deserialize<IEnumerable<CourseSchedule>>(data);
-        _courses = courses;
-            
-        var alternativeData = Uri.UnescapeDataString(AlternativeData);
-        var alternatives = JsonSerializer.Deserialize<IEnumerable<CourseSchedule>>(alternativeData);
-        _alternatives = alternatives;
+        var blocks = BlockData.DeserializeAndUnescape<IEnumerable<string>>();
+        var recommendedBlocks = RecommendedBlockData.DeserializeAndUnescape<IEnumerable<string>>();
+        var courses = CourseData.DeserializeAndUnescape<IEnumerable<string>>();
+        var alternatives = AlternativeData.DeserializeAndUnescape<IEnumerable<string>>();
+        var alternativeSchedules = await ScheduleRepository.GetSchedulesAsync(blocks: recommendedBlocks, courses: alternatives);
+
+        _courses = await ScheduleRepository.GetSchedulesAsync(blocks: blocks, courses: courses, conflicts: true);
+
+        _alternatives = alternativeSchedules
+            .OrderBy(schedule => schedule.CourseTitle)
+            .ThenBy(schedule => schedule.Days.Min())
+            .ThenBy(schedule => schedule.Start);
     }
 
 }

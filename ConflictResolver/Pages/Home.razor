@@ -274,7 +274,11 @@
 
     private async Task OnShareSchedule()
     {
-        var sharingUrl = $"{NavigationManager.BaseUri}resolve?courses={Uri.EscapeDataString(JsonSerializer.Serialize(_courses))}&alternatives={Uri.EscapeDataString(JsonSerializer.Serialize(_recommendedSchedules))}";
+        var schedules = _courses.Select(course => course.CourseTitle);
+        var recommendedSchedules = _recommendedSchedules.Select(course => course.CourseTitle);
+        var recommendedBlocks = _recommendedSchedules.Select(course => course.Block);
+        var sharingUrl = $"{NavigationManager.BaseUri}resolve?blocks={_selectedBlocks.SerializeAndEscape()}&recommendedBlocks={recommendedBlocks.SerializeAndEscape()}&courses={schedules.SerializeAndEscape()}&alternatives={recommendedSchedules.SerializeAndEscape()}";
+        
         await ClipboardHandler.CopyTextToClipboardAsync(sharingUrl);
         Snackbar.Add("Sharing link has been copied to clipboard", Severity.Success);
     }
