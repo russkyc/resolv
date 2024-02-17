@@ -105,4 +105,76 @@ public class ScheduleRepository
             .ThenBy(schedule => schedule.Start)
             .ToList();
     }
+    
+    public async Task<List<CourseSchedule>> GetSchedulesByCourseCodeAsync(IEnumerable<string>? blocks = null,
+        IEnumerable<string>? courses = null, string? day = null,
+        bool conflicts = false)
+    {
+        var schedules = await _httpClient.GetFromJsonAsync<List<CourseSchedule>>("data/class_schedules.json");
+
+        if (blocks != null)
+        {
+            schedules = schedules?
+                .Where(course => blocks.Any(block => course.Block.Equals(block)))
+                .ToList();
+        }
+
+        if (courses != null)
+        {
+            schedules = schedules?
+                .Where(course => courses.Any(code => course.Course.Equals(code)))
+                .ToList();
+        }
+
+        if (day != null)
+        {
+            if (!day.Equals("All"))
+            {
+                schedules = schedules?.Where(course => blocks.Any(block => course.Block.Equals(block))
+                                                       && course.Days.Any(dayId => dayId == day switch
+                                                       {
+                                                           "Mon" => 1,
+                                                           "Tue" => 2,
+                                                           "Wed" => 3,
+                                                           "Thu" => 4,
+                                                           "Fri" => 5,
+                                                           "Sat" => 6
+                                                       }))
+                    .ToList();
+            }
+        }
+
+        if (conflicts)
+        {
+            var referenceSchedules = schedules;
+            foreach (var courseSchedule in referenceSchedules)
+            {
+                var conflictSchedules = schedules.Where(schedule => courseSchedule
+                                                                        .Days
+                                                                        .Any(scheduleDay =>
+                                                                            schedule
+                                                                                .Days
+                                                                                .Any(referenceDay =>
+                                                                                    referenceDay == scheduleDay))
+                                                                    && courseSchedule.Start >= schedule.Start
+                                                                    && courseSchedule.Start < schedule.End
+                                                                    && !courseSchedule.Course.Equals(schedule.Course));
+                if (conflictSchedules.Any())
+                {
+                    foreach (var schedule in schedules)
+                    {
+                        if (schedule.Course.Equals(courseSchedule.Course))
+                        {
+                            schedule.Conflicts = true;
+                            schedule.CourseConflicts = conflictSchedules.Select(schedule => schedule.Course);
+                        }
+                    }
+                }
+            }
+        }
+
+        return schedules.OrderBy(schedule => schedule.Days.Min())
+            .ThenBy(schedule => schedule.Start)
+            .ToList();
+    }
 }

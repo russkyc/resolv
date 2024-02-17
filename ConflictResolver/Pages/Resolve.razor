@@ -166,9 +166,9 @@
         var recommendedBlocks = RecommendedBlockData.DeserializeAndUnescape<IEnumerable<string>>();
         var courses = CourseData.DeserializeAndUnescape<IEnumerable<string>>();
         var alternatives = AlternativeData.DeserializeAndUnescape<IEnumerable<string>>();
-        var alternativeSchedules = await ScheduleRepository.GetSchedulesAsync(blocks: recommendedBlocks, courses: alternatives);
+        var alternativeSchedules = await ScheduleRepository.GetSchedulesByCourseCodeAsync(blocks: recommendedBlocks, courses: alternatives);
 
-        _courses = await ScheduleRepository.GetSchedulesAsync(blocks: blocks, courses: courses, conflicts: true);
+        _courses = await ScheduleRepository.GetSchedulesByCourseCodeAsync(blocks: blocks, courses: courses, conflicts: true);
 
         _alternatives = alternativeSchedules
             .OrderBy(schedule => schedule.CourseTitle)

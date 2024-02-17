@@ -274,8 +274,8 @@
 
     private async Task OnShareSchedule()
     {
-        var schedules = _courses.Select(course => course.CourseTitle);
-        var recommendedSchedules = _recommendedSchedules.Select(course => course.CourseTitle);
+        var schedules = _courses.Select(course => course.Course);
+        var recommendedSchedules = _recommendedSchedules.Select(course => course.Course);
         var recommendedBlocks = _recommendedSchedules.Select(course => course.Block);
         var sharingUrl = $"{NavigationManager.BaseUri}resolve?blocks={_selectedBlocks.SerializeAndEscape()}&recommendedBlocks={recommendedBlocks.SerializeAndEscape()}&courses={schedules.SerializeAndEscape()}&alternatives={recommendedSchedules.SerializeAndEscape()}";
         
