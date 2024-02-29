@@ -11,6 +11,7 @@
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
     <script src="scripts/tailwind-341.js"></script>
     <meta property="og:image" content="images/preview.png">
+    <link href="manifest.webmanifest" rel="manifest" />
 </head>
 
 <body class="bg-[#32333d]">
@@ -29,6 +30,7 @@
     </div>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
 </body>
 
 </html>

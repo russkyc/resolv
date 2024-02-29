@@ -1,0 +1,22 @@
+{
+  "name": "Resolv - Conflict Resolver",
+  "short_name": "Resolv",
+  "id": "./",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#32333d",
+  "theme_color": "#776be7",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "resolv-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "resolv-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ]
+}
